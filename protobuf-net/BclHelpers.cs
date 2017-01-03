@@ -202,6 +202,10 @@ namespace ProtoBuf
         {
             if (dest == null) throw new ArgumentNullException("dest");
             TimeSpan delta;
+
+            if (!includeKind)
+                value = value.ToUniversalTime();
+
             switch (dest.WireType)
             {
                 case WireType.StartGroup:
