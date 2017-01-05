@@ -73,7 +73,7 @@ namespace ProtoBuf
         const int FieldTimeSpanValue = 0x01, FieldTimeSpanScale = 0x02, FieldTimeSpanKind = 0x03;
 
         internal static readonly DateTime[] EpochOrigin = {
-            new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+            new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), // Unspecified gets converted to UTC
             new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
             new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local)
         };
@@ -203,7 +203,9 @@ namespace ProtoBuf
             if (dest == null) throw new ArgumentNullException("dest");
             TimeSpan delta;
 
-            if (!includeKind)
+			// This means unspecified date time kinds don't round trip even when passed in as such, 
+			// but our existing code didn't support that anyways
+            if (!includeKind || value.Kind == DateTimeKind.Unspecified)
                 value = value.ToUniversalTime();
 
             switch (dest.WireType)
